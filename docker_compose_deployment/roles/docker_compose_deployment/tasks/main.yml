@@ -1,0 +1,72 @@
+---
+
+- name: Install prerequisites
+  become: yes
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+    state: present
+    update_cache: yes
+
+- name: Add Docker GPG key
+  become: yes
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker repository
+  become: yes
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+    state: present
+
+
+- name: Install Docker
+  become: yes
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: latest
+    update_cache: yes
+
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Create project directory
+  file:
+    path: "/home/cloudops/nodejs-demo-app"
+    state: directory
+    mode: '0755'
+
+- name: Copy docker-compose.yml
+  copy:
+    src: "files/docker-compose.yml"
+    dest: "/home/cloudops/nodejs-demo-app/docker_compose_deployment/roles/docker_compose_deployment/files"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Create Docker network
+  community.docker.docker_network:
+    name: "nodejs-demo-app_app-network"
+    state: present
+
+- name: Copy docker-compose.yml to the project directory
+  copy:
+    src: /home/cloudops/nodejs-demo-app/docker_compose_deployment/roles/docker_compose_deployment/files/docker-compose.yml
+    dest: /home/cloudops/nodejs-demo-app/docker-compose.yml
+
+- name: Start the Docker Compose project
+  community.docker.docker_compose_v2:
+    project_src: "/home/cloudops/nodejs-demo-app"
+    state: present
+
+
