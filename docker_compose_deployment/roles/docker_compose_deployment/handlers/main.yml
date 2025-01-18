@@ -1,5 +1,0 @@
----
-# handlers file for docker_compose_deployment
-
-- name: Restart Docker Compose
-  command: docker compose down && docker compose up -d

@@ -1,6 +1,0 @@
----
-- hosts: 0.0.0.0
-  connection: local
-  become: yes
-  roles:
-    - docker_compose_deployment
