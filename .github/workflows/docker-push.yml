@@ -26,6 +26,10 @@ jobs:
           role-to-assume: arn:aws:iam::569948922137:role/GitHubActionRole
           aws-region: ${{ env.AWS_REGION }}
           role-session-name: GitHubActionsSession
+      - name: Verify access
+        run: aws sts get-caller-identity
+
+          
 
       - name: Log in to Amazon ECR
         run: |
