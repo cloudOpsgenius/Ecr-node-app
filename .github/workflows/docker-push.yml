@@ -14,11 +14,15 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+  uses: aws-actions/configure-aws-credentials@v2
+  with:
+    role-to-assume: arn:aws:iam::569948922137:role/GitHubActionRole
+        aws-region: ${{ env.AWS_REGION }}
+        role-session-name: GitHubActionsSession
+
+
+      - name: Verify access
+        run: aws sts get-caller-identity
 
       - name: Log in to Amazon ECR
         run: |
